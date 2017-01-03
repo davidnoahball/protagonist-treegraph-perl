@@ -20,7 +20,14 @@ Each node represents a page, where parentheses represent a page with choices and
 This project will have two main functions: a tree-generator, which returns something similar to the above, and a data-generator, which returns dummy data in the following way, the array represents a book and each hash represents a page. This dummy data does not need to perfectly mimic the natural growth of a tree, but it should come close. I intend to make it flexible, so as to offer many tree's sample data depending on the starting parameters possible when first creating a book on the original Protagonist Collective project.
 
 ```
-[{id => 2, child1id => 4, child2id => -1}, ...]
+(
+  {
+    id => 2, 
+    child1id => 4, 
+    child2id => -1
+  }, 
+  ...
+)
 ```
 
 I also aim to build tests for this system, as that will be important to my working career in the future.

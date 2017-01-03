@@ -1,3 +1,5 @@
-use feature 'say';
+use strict;
+use warnings;
+use diagnostics;
 
-say "Hello World."
+use feature 'say';
