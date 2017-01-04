@@ -24,7 +24,8 @@ This project will have two main functions: a tree-generator, which returns somet
   {
     id => 2, 
     child1id => 4, 
-    child2id => -1
+    child2id => 0,
+    end => 0
   }, 
   ...
 )
