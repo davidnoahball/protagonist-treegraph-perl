@@ -3,6 +3,7 @@ use warnings;
 use diagnostics;
 
 use feature 'say';
+use List::Util 'first';
 
 sub data_generator{
   my ($node_limit, $treetop, $complete) = @_; #"node" and "change" are interchangeable terms
@@ -33,12 +34,17 @@ sub data_generator{
     if ($ending){ #loops through all available positions and sets them to ending pages
 
     }
+    my $current_page_check = 1; #start with first page
+    while (1){ #loop until broken by finding a proper page
+      my $current_page = first {$_->{id} == $current_page_check} @dummy_data; #sets the a reference to the page to check info for
+      my $child_check_id = int(rand(2)) ? ${$current_page}{child1id} : ${$current_page}{child2id}; #picks a random child to grab the id for
+      return $child_check_id;
+    }
   }
 
   return @dummy_data;
 }
 
-#start with first page
 #loop{
 #pick random child
 #if child is empty slot (childid=0), add page
@@ -60,5 +66,6 @@ sub print_data{ #doesn't print page info in order, but that's not so important f
   say ")";
 }
 
-my @dummy = data_generator();
-print_data(@dummy);
+#my @dummy = data_generator();
+#print_data(@dummy);
+say data_generator();
