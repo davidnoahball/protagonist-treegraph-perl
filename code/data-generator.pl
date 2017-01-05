@@ -20,9 +20,15 @@ sub data_generator{
   my @dummy_data = ( #it can be assumed that this will always be ordered by page id, where (index = id - 1)
     {
       id => 1, #page identifier
-      child1id => 0, #where the page leads on one choice
-      child2id => 0, #where the page leads on the other choice
+      child1id => 2, #where the page leads on one choice
+      child2id => 2, #where the page leads on the other choice
       end => 0 #is this page an ending (no children)?
+    },
+    {
+      id => 2, #page identifier
+      child1id => 2, #where the page leads on one choice
+      child2id => 2, #where the page leads on the other choice
+      end => 3 #is this page an ending (no children)?
     }
   );
   
@@ -36,9 +42,14 @@ sub data_generator{
     }
     my $current_page_check = 1; #start with first page
     while (1){ #loop until broken by finding a proper page
+      my $child_check_page = 0; #to be used later, potentially
       my $current_page = first {$_->{id} == $current_page_check} @dummy_data; #sets the a reference to the page to check info for
       my $child_check_id = int(rand(2)) ? ${$current_page}{child1id} : ${$current_page}{child2id}; #picks a random child to grab the id for
-      return $child_check_id;
+      if (!$child_check_id){ #if child is empty slot (==0), add page; this is ok to do because the loop should never start from an end
+      } else{
+        $child_check_page = first {$_->{id} == $child_check_id} @dummy_data; #otherwise, create a reference to the child page to examine it and determine what to do next
+      }
+      return ${$child_check_page}{end};
     }
   }
 
@@ -46,8 +57,6 @@ sub data_generator{
 }
 
 #loop{
-#pick random child
-#if child is empty slot (childid=0), add page
 #if child is end (childid=2, id2.end=1), restart
 #if child is choice (childid=2, id2.end=0), restart loop with this page
 #}
