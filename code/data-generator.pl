@@ -37,11 +37,12 @@ sub data_generator{
     }
     my $current_page_check = 1; #start with first page
     while (1){ #loop until broken by finding a proper page
+      my $next_is_end = ($ends_available > 0 && int(rand(2))) ? 1 : 0; #sets the next node to be an end %50 of the time if there are ends available
       my $child_check_page = 0; #to be used later, potentially
       my $current_page = first {$_->{id} == $current_page_check} @dummy_data; #sets the a reference to the page to check info for
       my $child_check_id = int(rand(2)) ? ${$current_page}{child1id} : ${$current_page}{child2id}; #picks a random child to grab the id for
       if (!$child_check_id){ #if child is empty slot (==0), add page; this is ok to do because the loop should never start from an end --TODO-- Add the ability for 'end' attribute to be true
-        push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0}; #create the new node
+        push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => $next_is_end}; #create the new node
         my $first_check = int(rand(2));
         if ($first_check && !${$current_page}{child1id}){ #this ugly if block just sets a random available childid to the new node's id
           $dummy_data[$current_page_check - 1]{child1id} = $next_page_id;
@@ -52,9 +53,15 @@ sub data_generator{
         } else{
           $dummy_data[$current_page_check - 1]{child1id} = $next_page_id;
         }
-        $node_count += 1; 
-        $available_positions += 1;
-        $next_page_id += 1;
+        $node_count += 1; #for this, $ends_available, and $available_positions, it is easier and more intuitive to just keep track like this than to count every time the value is needed
+        if ($next_is_end){
+          $available_positions -= 1;
+          $ends_available -= 1;
+        } else{
+          $available_positions += 1;
+          $ends_available += 1;
+        }
+        $next_page_id += 1; #increments so that no two pages have the same id
         last;
       } else{
         $child_check_page = first {$_->{id} == $child_check_id} @dummy_data; #otherwise, create a reference to the child page to examine it and determine what to do next
@@ -73,6 +80,7 @@ sub data_generator{
   return @dummy_data;
 }
 
+#credit for the base version of this function to O'Reilly and Associates
 sub print_data{ #doesn't print page info in order, but that's not so important for its purpose
   my @data = @_;
 
