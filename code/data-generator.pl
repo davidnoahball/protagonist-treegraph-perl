@@ -18,7 +18,7 @@ sub data_generator{
   my $next_page_id = 2; #increments on each new page creation
   my $ends_available = 0; #makes sure there aren't ever more endings than choices, to avoid tree ending before scheduled
 
-  my @dummy_data = ( #it can be assumed that this will always be ordered by page id, where (index = id - 1)
+  my @dummy_data = ( #this is to be created into the final return value, and it can be assumed that this will always be ordered by page id, where (index = id - 1)
     {
       id => 1, #page identifier
       child1id => 0, #where the page leads on one choice
@@ -41,13 +41,18 @@ sub data_generator{
       my $current_page = first {$_->{id} == $current_page_check} @dummy_data; #sets the a reference to the page to check info for
       my $child_check_id = int(rand(2)) ? ${$current_page}{child1id} : ${$current_page}{child2id}; #picks a random child to grab the id for
       if (!$child_check_id){ #if child is empty slot (==0), add page; this is ok to do because the loop should never start from an end --TODO-- Add the ability for 'end' attribute to be true
-        push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0};
-        if (!${$current_page}{child1id}){
+        push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0}; #create the new node
+        my $first_check = int(rand(2));
+        if ($first_check && !${$current_page}{child1id}){ #this ugly if block just sets a random available childid to the new node's id
           $dummy_data[$current_page_check - 1]{child1id} = $next_page_id;
-        } else{
+        } elsif ($first_check){
           $dummy_data[$current_page_check - 1]{child2id} = $next_page_id;
+        } elsif (!${$current_page}{child2id}) {
+          $dummy_data[$current_page_check - 1]{child2id} = $next_page_id;
+        } else{
+          $dummy_data[$current_page_check - 1]{child1id} = $next_page_id;
         }
-        $node_count += 1;
+        $node_count += 1; 
         $available_positions += 1;
         $next_page_id += 1;
         last;
