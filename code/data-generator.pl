@@ -17,6 +17,7 @@ sub data_generator{
   my $ending = 0; #toggle: when true, all future nodes will be made endings
   my $next_page_id = 2; #increments on each new page creation
   my $ends_available = 0; #makes sure there aren't ever more endings than choices, to avoid tree ending before scheduled
+  my $current_page_check = 1; #keeps track of which page you're checking logic for, starts with page 1
 
   my @dummy_data = ( #this is to be created into the final return value, and it can be assumed that this will always be ordered by page id, where (index = id - 1)
     {
@@ -27,13 +28,25 @@ sub data_generator{
     }
   );
   
+  while ($node_count < ((2 ** $treetop) - 1)){ #the number of nodes in the 'treetop' (layers of only choice pages) will always be equal to (2^l)-1, where l is the layer count; this while loop follows the process of set all new nodes to choices, add new nodes to all available positions in incrementing order of id, update essential data, break out once the required number of nodes are met
+    push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0};
+    $dummy_data[$current_page_check - 1]{child1id} = $next_page_id;
+    $next_page_id += 1;
+    push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0};
+    $dummy_data[$current_page_check - 1]{child2id} = $next_page_id;
+    $next_page_id += 1;
+    $current_page_check += 1;
+    $available_positions += 2;
+    $node_count += 2;
+  }
+
   #a non-directional (doesn't search for openings) tree-descension is inefficient but necessary for accuracy without (much more) complexity
   while ($node_count < $node_limit){
-    if ($complete && (($node_count + $available_positions == $node_limit) || ($node_count + $available_positions == $node_limit - 1))){ #checks for and toggles the end phase; due to the nature of the tree, it is impossible to have a finished tree with an even number of nodes, so this will cause the tree to effectively round down the node_count to the nearest odd number if the node_count is even
+    if ($complete && (($node_count + $available_positions == $node_limit) || ($node_count + $available_positions == $node_limit - 1))){ #checks for and toggles the end phase; due to the nature of the tree, it is impossible to have a finished tree with an even number of nodes, so this will cause the tree to effectively round down the node_count to the nearest odd number if the node_count is even; if this form of looping is not used in favor of the tree descension mechanism below, there will often be hundreds or thousands of more loops than necessary, without much added benefit
       $ending = 1;
     }
     if ($ending){ #loops through all available positions and sets them to ending pages
-      for my $page (@dummy_data){
+      for my $page (@dummy_data){ 
         if (!${$page}{end}){
           if (!${$page}{child1id}){
             push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 1};
@@ -49,7 +62,6 @@ sub data_generator{
       }
       return @dummy_data;
     }
-    my $current_page_check = 1; #start with first page
     while (1){ #loop until broken by finding a proper page
       my $next_is_end = ($ends_available > 0 && int(rand(2))) ? 1 : 0; #sets the next node to be an end %50 of the time if there are ends available
       my $child_check_page = 0; #to be used later, potentially
