@@ -10,7 +10,11 @@ sub data_generator{
 
   $node_limit ||= 32; #number of nodes in tree
   $treetop ||= 3; #layers of only choice pages, to make sure the book's stories aren't too short
-  $complete ||= 0; #do all paths lead to endings, 0 for false
+  $complete ||= 0; #if truthy, all paths will lead to endings
+
+  $node_limit < 4 ? $node_limit = 4 : 0;#need to put an absolute minimum on the node_limit to ensure proper functionality
+  $treetop < 1 ? $treetop = 1 : 0;#need to put an absolute minimum on the treetop
+  $node_limit < ((2 ** $treetop) * 2) ? $node_limit = ((2 ** $treetop) * 2) : 0;#need to make sure the node_limit is also at least equal to ((2 ** $treetop)) * 2 for proper subroutine functionality
 
   my $node_count = 1; #keeps track of the current number of nodes
   my $available_positions = 2; #keeps track of available positions for nodes to be added
@@ -122,5 +126,5 @@ sub print_data{ #doesn't print page info in order, but that's not so important f
   say ")";
 }
 
-my @dummy = data_generator(32, 3, 1);
+my @dummy = data_generator();
 print_data(@dummy);
