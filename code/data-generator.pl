@@ -29,11 +29,25 @@ sub data_generator{
   
   #a non-directional (doesn't search for openings) tree-descension is inefficient but necessary for accuracy without (much more) complexity
   while ($node_count < $node_limit){
-    if ($complete && ($node_count + $available_positions == $node_limit)){ #checks for and toggles the end phase
+    if ($complete && (($node_count + $available_positions == $node_limit) || ($node_count + $available_positions == $node_limit - 1))){ #checks for and toggles the end phase; due to the nature of the tree, it is impossible to have a finished tree with an even number of nodes, so this will cause the tree to effectively round down the node_count to the nearest odd number if the node_count is even
       $ending = 1;
     }
     if ($ending){ #loops through all available positions and sets them to ending pages
-
+      for my $page (@dummy_data){
+        if (!${$page}{end}){
+          if (!${$page}{child1id}){
+            push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 1};
+            ${$page}{child1id} = $next_page_id;
+            $next_page_id += 1;
+          }
+          if (!${$page}{child2id}){
+            push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 1};
+            ${$page}{child2id} = $next_page_id;
+            $next_page_id += 1;
+          }
+        }
+      }
+      return @dummy_data;
     }
     my $current_page_check = 1; #start with first page
     while (1){ #loop until broken by finding a proper page
@@ -61,8 +75,9 @@ sub data_generator{
           $available_positions += 1;
           $ends_available += 1;
         }
+        #say $node_count . " + " . $ends_available . " = " . ($node_count + $ends_available);
         $next_page_id += 1; #increments so that no two pages have the same id
-        last;
+        last; #breaks so the cycle can restart and a new node can be created
       } else{
         $child_check_page = first {$_->{id} == $child_check_id} @dummy_data; #otherwise, create a reference to the child page to examine it and determine what to do next
 
@@ -95,5 +110,5 @@ sub print_data{ #doesn't print page info in order, but that's not so important f
   say ")";
 }
 
-my @dummy = data_generator();
+my @dummy = data_generator(32, 3, 1);
 print_data(@dummy);
