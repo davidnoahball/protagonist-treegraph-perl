@@ -111,18 +111,22 @@ sub data_generator{
   return @dummy_data;
 }
 
-#credit for the base version of this function to O'Reilly and Associates
-sub print_data{ #doesn't print page info in order, but that's not so important for its purpose
+sub print_data{
   my @data = @_;
 
   say "(";
+    my $content_string = "";
   for my $page ( @data ) {
-      print "  {";
-      for my $info ( keys %$page ) {
-          print "$info=$page->{$info} ";
+      $content_string = $content_string . "  {";
+      my $page_string = "";
+      foreach((sort{$a cmp $b}(keys(%$page)))){
+          $page_string = $page_string . "$_=$page->{$_}, ";
       }
-      print "},\n";
+      $page_string = substr $page_string, 0, ((length $page_string) - 2);
+      $content_string = $content_string . $page_string;
+      $content_string = $content_string . "},\n";
   }
+  say substr $content_string, 0, ((length $content_string) - 2);
   say ")";
 }
 
