@@ -8,6 +8,13 @@ require "/Users/davidball/Development/code/protagonist-treegraph-perl/code/data_
 
 sub tree_generator{
   my @tree_data = @_;
+
+}
+
+my @dummy = data_generator();
+tree_generator(@dummy);
+
+sub folded_notes_please_ignore{
   #For this tree, I should aim to make the nodes as compact as possible. Each choice page will have the opportunity to branch down or to one side. It can always be assumed that the space beneath a node will be available. That only leaves when to expand out to one side (right for the right side of the tree and left for the left; the Adam node (id=1) will branch to both sides in order to create 2 halves of a tree, as shown in the README). 
 
   #For any parent node, the number of spaces it will have to extend to have its "side child" is equal to the distance between its position in respect to the center of the tree and the next available position on the level below it. Since the order that children are created is random, it cannot be assumed that the tree will not need continuous updating, as would be unnecessary if the tree built itself strictly inward out. The root of the problem that causes this scenario is that choice nodes can have one or no children and when their second child is made, they require more space on the level of the tree below them (deeper into the story), which could cause conflict with other nodes stemming from higher up in the tree (and therefore being on the further edges of it). It is possible to simply reserve this spot until the tree is completed in building itself, but that would lead to a tree which looks too "spread-out", as a result of unused space. The possible solution to *this* problem is that you could have an "end-phase" of the tree creation which would compactify the tree and remove these gaps. 
@@ -22,6 +29,3 @@ sub tree_generator{
 
   #To find the absolute position of each node, one can start by looking at the fullest row, with precedence given to the lowest of the full rows in the case of equality. Each of these pages will have an abs_pos equal to their rel_pos. 
 }
-
-my @dummy = data_generator();
-print_data(@dummy);
