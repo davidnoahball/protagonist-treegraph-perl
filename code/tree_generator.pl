@@ -3,16 +3,26 @@ use warnings;
 use diagnostics;
 
 use feature 'say';
+use List::Util 'first';
 
 require "/Users/davidball/Development/code/protagonist-treegraph-perl/code/data_generator.pl";
 
 sub tree_generator{
   my @tree_data = @_;
+  #First find the depth of each node and add it as an attribute.
+  for my $page (@tree_data){ #Add information on parents
+    $tree_data[${$page}{id} - 1]{parent_hash_ref} = ((first {${$_}{child1id} == ${$page}{id}} @tree_data) || (first {${$_}{child2id} == ${$page}{id}} @tree_data) || (0));
+  }
+  for my $page (@tree_data){
+    my $depth = 1;
 
+    $tree_data[${$page}{id} - 1]{depth} = $depth;
+  }
 }
 
 my @dummy = data_generator();
 tree_generator(@dummy);
+print_data(@dummy);
 
 sub folded_notes_please_ignore{
   #For this tree, I should aim to make the nodes as compact as possible. Each choice page will have the opportunity to branch down or to one side. It can always be assumed that the space beneath a node will be available. That only leaves when to expand out to one side (right for the right side of the tree and left for the left; the Adam node (id=1) will branch to both sides in order to create 2 halves of a tree, as shown in the README). 
