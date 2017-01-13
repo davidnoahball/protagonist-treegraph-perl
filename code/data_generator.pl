@@ -1,9 +1,15 @@
+#package DataGenerator;
+
 use strict;
 use warnings;
 use diagnostics;
 
 use feature 'say';
 use List::Util 'first';
+#use Exporter;
+
+#our @ISA= qw(Exporter);
+#our @EXPORT = qw(data_generator print_data);
 
 sub data_generator{
   my ($node_limit, $treetop, $complete) = @_; #"node" and "change" are interchangeable terms
@@ -130,5 +136,4 @@ sub print_data{
   say ")";
 }
 
-my @dummy = data_generator();
-print_data(@dummy);
+1;

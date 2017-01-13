@@ -4,6 +4,8 @@ use diagnostics;
 
 use feature 'say';
 
+require "/Users/davidball/Development/code/protagonist-treegraph-perl/code/data_generator.pl";
+
 sub tree_generator{
   my @tree_data = @_;
   #For this tree, I should aim to make the nodes as compact as possible. Each choice page will have the opportunity to branch down or to one side. It can always be assumed that the space beneath a node will be available. That only leaves when to expand out to one side (right for the right side of the tree and left for the left; the Adam node (id=1) will branch to both sides in order to create 2 halves of a tree, as shown in the README). 
@@ -20,3 +22,6 @@ sub tree_generator{
 
   #To find the absolute position of each node, one can start by looking at the fullest row, with precedence given to the lowest of the full rows in the case of equality. Each of these pages will have an abs_pos equal to their rel_pos. 
 }
+
+my @dummy = data_generator();
+print_data(@dummy);
