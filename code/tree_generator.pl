@@ -15,7 +15,15 @@ sub tree_generator{
   }
   for my $page (@tree_data){
     my $depth = 1;
-
+    my $parent_check = ${$page}{parent_hash_ref};
+    while (1){
+      if (!$parent_check){
+        last;
+      } else{
+        $depth += 1;
+        $parent_check = ${$parent_check}{parent_hash_ref};
+      }
+    }
     $tree_data[${$page}{id} - 1]{depth} = $depth;
   }
 }
