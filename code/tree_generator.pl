@@ -9,11 +9,14 @@ require "/Users/davidball/Development/code/protagonist-treegraph-perl/code/data_
 
 sub tree_generator{
   my @tree_data = @_;
+
+  my @unsorted_depths = []; #Whenever a depth is found, either add it to a new array in this one or add it to its proper array, by position
+
   #First find the depth of each node and add it as an attribute.
   for my $page (@tree_data){ #Add information on parents
     $tree_data[${$page}{id} - 1]{parent_hash_ref} = ((first {${$_}{child1id} == ${$page}{id}} @tree_data) || (first {${$_}{child2id} == ${$page}{id}} @tree_data) || (0));
   }
-  for my $page (@tree_data){
+  for my $page (@tree_data){ #Fill @unsorted_depths with all of the layer information
     my $depth = 1;
     my $parent_check = ${$page}{parent_hash_ref};
     while (1){
@@ -25,6 +28,14 @@ sub tree_generator{
       }
     }
     $tree_data[${$page}{id} - 1]{depth} = $depth;
+    if (!$unsorted_depths[($depth - 1)]){
+      push @unsorted_depths, [${$page}{id}]; 
+    } else{
+      push @unsorted_depths[($depth - 1)], ${$page}{id};
+    }
+  }
+  for my $layer (@unsorted_depths){ #Print @unsorted_depths for examination
+    say join(", ", @{$layer});
   }
 }
 
