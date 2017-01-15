@@ -54,7 +54,7 @@ sub folded_notes_please_ignore{
 
   #The most important universal law here is that each node must be next to its brother if it has one. Considering that the nature of the tree is one with unorded paths, it can be determined that any single node on the bottom layer has the potential to be the centermost node. With these two ideas in mind, it is possible to build bottom-up. Keep a set of arrays, one for each layer of the tree. In these arrays, push the ids of the nodes by the following method. Choose a random node on the bottom layer of the tree. Then, climb the tree. In order for the bottom node to be closest to the center, each of its ancestors must also be closest to the center, add these nodes' ids *and* their brother's ids to their respective arrays in the dataset. 
 
-  #Once that is done, restart from the bottom and climb the tree (in the same manner) once more until you reach a page who's brother has undocumented children. Treat that page as the top of a new tree and repeat this process recursively. This will give all the data necessary to find the rel_pos of every node.
+  #Once that is done, restart from the bottom and climb the tree (in the same manner) once more until you reach a page whose brother has undocumented children. Treat that page as the top of a new tree and repeat this process recursively. This will give all the data necessary to find the rel_pos of every node.
 
   #To find the absolute position of each node, one can start by looking at the fullest row, with precedence given to the lowest of the full rows in the case of equality. Each of these pages will have an abs_pos equal to their rel_pos. 
 }
