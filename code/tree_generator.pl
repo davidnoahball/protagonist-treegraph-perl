@@ -56,9 +56,19 @@ sub row_sorter{
   my @unsorted = @{$_[0]}; #unsorted comes in as [[{k:v, k:v}, {k:v, k:v}], [{k:v, k:v}, {k:v, k:v}]]; children will always be in the next row
   my $apex = $_[1];
   #set a value equal to the line extending from the bottom of the tree determined by the apex
+  #the first step is to create an array that is the height of the entire tree, this preserves the vertical position data
+  #the next step is to determine which nodes are descendents of the apex to create a new tree
+  #the next step is to pick a child on the bottommost layer of the apex tree
+  #the next step is to climb the tree from the bottom node up to the apex and push those nodes into their respective positions in 'the array with the height of the entire tree', henceforth referred to as hometree
+  #the next step is to climb the tree again in the exact same way and check if any of the nodes have brothers
+  #if they do, then set a new value equal to the return value of a recursive call with that brother's node as the apex; do this and the next step for each brother before climbing any farther
+  #with that return value, combine it with the hometree by checking which heights the tree occupies then putting it in the centermost position such that it does not intersect with any of the nodes on any of those rows and nor does it go more nor equally centerward in comparison to the rightmost node on the row directly below
+  #once that is done for all brothers, return the hometree
+  #
+  #all of this needs to work with apexes that give trees with a height equal to 1
   my @sorted = [];
   say $apex;
-  print join(", ", @unsorted), "\n";
+  print join(", ", @{$unsorted[0]}), "\n";
   # if ($sorted[($depth - 1)]){
   #   push @unsorted_right, [${$page}{id}];
   # } else{
@@ -69,7 +79,3 @@ sub row_sorter{
 my @dummy = data_generator();
 tree_generator(@dummy);
 #print_data(@dummy);
-
-sub folded_notes_please_ignore{
-  #I've worked out that it makes the most sense to find the abs_pos of the tree nodes in the row sorting phase and this block is just notes so I don't have to keep referencing my notebook. For all intents and purposes, treat left most as centermost and rightmost as outwardmost. The row_sorter method will be recursive and work in the following manner. First, it will choose a random node at the bottom of the tree and climb, setting each of the initial values in a multidimensional array meant to keep track of the sorted positions, similar to the @unsorted_left, for example. Then, again starting at the bottom, it will climb and call the function again within itself whenever it comes across a node with an undocumented brother, using that as the new apex. The result of that call will be added to the previous call by the following method. The leftmost side of the returned multidimensional array will be treated as a line. This line's position will be determined by the nodes the set is being added to; it will be as far left as possible while making sure that on each row it does not intersect with the existing set's nodes and nor does it go further left than the position of the rightmost node on the layer immediately below it. This is likely not clear to any outside readers (difficult to express without visuals), but it will serve as good reference to me.
-}
