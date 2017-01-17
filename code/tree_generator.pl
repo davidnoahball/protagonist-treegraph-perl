@@ -55,8 +55,12 @@ sub tree_generator{
 sub row_sorter{
   my @unsorted = @{$_[0]}; #unsorted comes in as [[{k:v, k:v}, {k:v, k:v}], [{k:v, k:v}, {k:v, k:v}]]; children will always be in the next row
   my $apex = $_[1];
-  #set a value equal to the line extending from the bottom of the tree determined by the apex
   #the first step is to create an array that is the height of the entire tree, this preserves the vertical position data
+  my @sorted = [];
+  for my $i (1..(scalar @unsorted)) {
+    push @sorted, [];
+  }
+  shift @sorted;
   #the next step is to determine which nodes are descendents of the apex to create a new tree
   #the next step is to pick a child on the bottommost layer of the apex tree
   #the next step is to climb the tree from the bottom node up to the apex and push those nodes into their respective positions in 'the array with the height of the entire tree', henceforth referred to as hometree
@@ -66,9 +70,10 @@ sub row_sorter{
   #once that is done for all brothers, return the hometree
   #
   #all of this needs to work with apexes that give trees with a height equal to 1
-  my @sorted = [];
   say $apex;
-  print join(", ", @{$unsorted[0]}), "\n";
+  say scalar @unsorted;
+  print join(", ", @{$sorted[0]}), "\n";
+  print join(", ", @sorted), "\n";
   # if ($sorted[($depth - 1)]){
   #   push @unsorted_right, [${$page}{id}];
   # } else{
