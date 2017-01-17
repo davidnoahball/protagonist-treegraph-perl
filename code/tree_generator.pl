@@ -49,19 +49,22 @@ sub tree_generator{
     }
   }
   shift @unsorted_right;
-  my @sorted_right = row_sorter(\@unsorted_right, 3);
+  my @sorted_right = row_sorter(\@unsorted_right, 3, \@tree_data);
 }
 
 sub row_sorter{
   my @unsorted = @{$_[0]}; #unsorted comes in as [[{k:v, k:v}, {k:v, k:v}], [{k:v, k:v}, {k:v, k:v}]]; children will always be in the next row
   my $apex = $_[1];
+  my @raw_data = @{$_[2]};
   #the first step is to create an array that is the height of the entire tree, this preserves the vertical position data
   my @sorted = [];
   for my $i (1..(scalar @unsorted)) {
     push @sorted, [];
   }
   shift @sorted;
-  #the next step is to determine which nodes are descendents of the apex to create a new tree
+  #the next step is to determine which nodes are descendents of the apex to create a new tree: find a node, push that, find its children's nodes, push those, repeat for child nodes
+  my $apex_node = find_by_id(\@raw_data, $apex);
+  say $apex_node;
   #the next step is to pick a child on the bottommost layer of the apex tree
   #the next step is to climb the tree from the bottom node up to the apex and push those nodes into their respective positions in 'the array with the height of the entire tree', henceforth referred to as hometree
   #the next step is to climb the tree again in the exact same way and check if any of the nodes have brothers
@@ -79,6 +82,16 @@ sub row_sorter{
   # } else{
   #   push @unsorted_right[($depth - 1)], ${$page}{id};
   # }
+}
+
+sub find_by_id{
+  my @searchspace = @{$_[0]};
+  my $id = $_[1];
+  for my $page (@searchspace){
+    if (${$page}{id} == $id){
+      return $page;
+    }
+  }
 }
 
 my @dummy = data_generator();
