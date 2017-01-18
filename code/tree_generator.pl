@@ -64,7 +64,7 @@ sub row_sorter{
   shift @sorted;
   #the next step is to determine which nodes are descendents of the apex to create a new tree: find a node, push that, find its children's nodes, push those, repeat for child nodes
   my $apex_node = find_by_id(\@raw_data, $apex);
-  say $apex_node;
+  my @subtree = find_descendants(\@raw_data, $apex_node, \@sorted);
   #the next step is to pick a child on the bottommost layer of the apex tree
   #the next step is to climb the tree from the bottom node up to the apex and push those nodes into their respective positions in 'the array with the height of the entire tree', henceforth referred to as hometree
   #the next step is to climb the tree again in the exact same way and check if any of the nodes have brothers
@@ -73,10 +73,11 @@ sub row_sorter{
   #once that is done for all brothers, return the hometree
   #
   #all of this needs to work with apexes that give trees with a height equal to 1
-  say $apex;
-  say scalar @unsorted;
+  #say $apex;
+  #say scalar @unsorted;
   print join(", ", @{$sorted[0]}), "\n";
-  print join(", ", @sorted), "\n";
+  say "subtree scalar: ", scalar @subtree;
+  print join(", ", @subtree), "\n";
   # if ($sorted[($depth - 1)]){
   #   push @unsorted_right, [${$page}{id}];
   # } else{
@@ -84,6 +85,12 @@ sub row_sorter{
   # }
 }
 
+my @dummy = data_generator(8, 2, 0);
+tree_generator(@dummy);
+#print_data(@dummy);
+
+sub failed_subtree_generator{
+=pod
 sub find_by_id{
   my @searchspace = @{$_[0]};
   my $id = $_[1];
@@ -94,6 +101,47 @@ sub find_by_id{
   }
 }
 
-my @dummy = data_generator();
-tree_generator(@dummy);
-#print_data(@dummy);
+sub find_descendants{
+  say "there's a problem";
+  my @searchspace = @{$_[0]};
+  my $parent = $_[1];
+  my @base = @{$_[2]}; #push the nodes into the array with index equal to depth - 1
+  #push the parent, find descendants for the children, combine them, push the result
+  my @child1 = undef;
+  my @child2 = undef;
+  if (${$parent}{child1id}){
+    @child1 = find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child1id}), \@base);
+    say ${$parent}{child1id};
+    say "child1 updated";
+    for my $item (@child1){
+      print join(", ", @{$item}), "\n";
+    }
+  }
+  if (${$parent}{child2id}){
+    @child2 = find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child2id}), \@base);
+  }
+  push @{$base[(${$parent}{depth} - 1)]}, $parent;
+  if (${$parent}{child2id} && ${$parent}{child1id}){
+    my @children = merge_multis(\@child1, \@child2);
+    return merge_multis(\@base, \@children);
+  } elsif(${$parent}{child2id}){
+    return merge_multis(\@base, \@child2);
+  } elsif(${$parent}{child1id}){
+    return merge_multis(\@base, \@child1);
+  } else{
+    return @base;
+  }
+}
+
+sub merge_multis{
+  my @multi1 = @{$_[0]};
+  my @multi2 = @{$_[1]};
+  for (my $i=0; $i<scalar @multi1; ++$i){
+    for my $item (@{$multi2[$i]}){
+      push @{$multi1[$i]}, $item;
+    }
+  }
+  return @multi1;
+}
+=cut
+}
