@@ -85,9 +85,15 @@ sub row_sorter{
   # }
 }
 
+sub find_by_id{
+  my @searchspace = @{$_[0]};
+  my $id = $_[1];
+  return @searchspace[($id - 1)];
+}
+
 my @dummy = data_generator(8, 2, 0);
-tree_generator(@dummy);
-#print_data(@dummy);
+#tree_generator(@dummy);
+print_data(@dummy);
 
 sub failed_subtree_generator{
 =pod
