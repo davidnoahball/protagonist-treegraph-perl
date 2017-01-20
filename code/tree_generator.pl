@@ -91,7 +91,9 @@ sub find_by_id{
   return @searchspace[($id - 1)];
 }
 
-my @dummy = data_generator(8, 2, 0);
+
+
+my @dummy = data_generator();
 #tree_generator(@dummy);
 print_data(@dummy);
 

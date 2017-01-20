@@ -34,15 +34,16 @@ sub data_generator{
       id => 1, #page identifier
       child1id => 0, #where the page leads on one choice
       child2id => 0, #where the page leads on the other choice
-      end => 0 #is this page an ending (no children)?
+      end => 0, #is this page an ending (no children)?
+      parent_id => 0
     }
   );
   
   while ($node_count < ((2 ** $treetop) - 1)){ #the number of nodes in the 'treetop' (layers of only choice pages) will always be equal to (2^l)-1, where l is the layer count; this while loop follows the process of set all new nodes to choices, add new nodes to all available positions in incrementing order of id, update essential data, break out once the required number of nodes are met
-    push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0};
+    push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0, parent_id => $dummy_data[$current_page_check - 1]{id}};
     $dummy_data[$current_page_check - 1]{child1id} = $next_page_id;
     $next_page_id += 1;
-    push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0};
+    push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 0, parent_id => $dummy_data[$current_page_check - 1]{id}};
     $dummy_data[$current_page_check - 1]{child2id} = $next_page_id;
     $next_page_id += 1;
     $current_page_check += 1;
@@ -59,12 +60,12 @@ sub data_generator{
       for my $page (@dummy_data){ 
         if (!${$page}{end}){
           if (!${$page}{child1id}){
-            push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 1};
+            push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 1, parent_id => ${$page}{id}};
             ${$page}{child1id} = $next_page_id;
             $next_page_id += 1;
           }
           if (!${$page}{child2id}){
-            push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 1};
+            push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => 1, parent_id => ${$page}{id}};
             ${$page}{child2id} = $next_page_id;
             $next_page_id += 1;
           }
@@ -78,7 +79,7 @@ sub data_generator{
       my $current_page = first {$_->{id} == $current_page_check} @dummy_data; #sets the a reference to the page to check info for
       my $child_check_id = int(rand(2)) ? ${$current_page}{child1id} : ${$current_page}{child2id}; #picks a random child to grab the id for
       if (!$child_check_id){ #if child is empty slot (==0), add page; this is ok to do because the loop should never start from an end --TODO-- Add the ability for 'end' attribute to be true
-        push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => $next_is_end}; #create the new node
+        push @dummy_data, {id => $next_page_id, child1id => 0, child2id => 0, end => $next_is_end, parent_id => $dummy_data[$current_page_check - 1]{id}}; #create the new node
         my $first_check = int(rand(2));
         if ($first_check && !${$current_page}{child1id}){ #this ugly if block just sets a random available childid to the new node's id
           $dummy_data[$current_page_check - 1]{child1id} = $next_page_id;
