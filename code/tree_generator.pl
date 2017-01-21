@@ -88,13 +88,43 @@ sub row_sorter{
 sub find_by_id{
   my @searchspace = @{$_[0]};
   my $id = $_[1];
-  return @searchspace[($id - 1)];
+  if ($id == 0){
+    return 0;
+  }
+  return $searchspace[($id - 1)];
 }
 
+sub find_descendants{
+  my @searchspace = @{$_[0]};
+  my $parent = $_[1];
+  my @base = @{$_[2]};
+  #push apex node, generate apex node children if available, combine arrays
+  if (!($parent)){ #<<-- Why is this not running?
+    say "returned base";
+    return @base;
+  }
+  say ${$parent}{id};
+  #say ${$parent}{child2id};
+  my @children = merge_multis((find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child1id}), \@base)), (find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child2id}), \@base)));
+  push @{$base[(${$parent}{depth} - 1)]}, $parent;
+  print join(", ", @base), "\n";
+  return merge_multis(@base, @children);
+}
 
+sub merge_multis{
+  say "called merge_multis";
+  my @multi1 = @{$_[0]};
+  my @multi2 = @{$_[1]};
+  for (my $i=0; $i<scalar @multi1; $i++){
+    for my $item (@{$multi2[$i]}){
+      push @{$multi1[$i]}, $item;
+    }
+  }
+  return @multi1;
+}
 
-my @dummy = data_generator();
-#tree_generator(@dummy);
+my @dummy = data_generator(4, 1, 0);
+tree_generator(@dummy);
 print_data(@dummy);
 
 sub failed_subtree_generator{
@@ -144,7 +174,7 @@ sub find_descendants{
 sub merge_multis{
   my @multi1 = @{$_[0]};
   my @multi2 = @{$_[1]};
-  for (my $i=0; $i<scalar @multi1; ++$i){
+  for (my $i=0; $i<scalar @multi1; $i++){
     for my $item (@{$multi2[$i]}){
       push @{$multi1[$i]}, $item;
     }
