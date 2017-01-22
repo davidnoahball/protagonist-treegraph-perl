@@ -75,7 +75,6 @@ sub row_sorter{
   #all of this needs to work with apexes that give trees with a height equal to 1
   #say $apex;
   #say scalar @unsorted;
-  print join(", ", @{$sorted[0]}), "\n";
   say "subtree scalar: ", scalar @subtree;
   print join(", ", @subtree), "\n";
   # if ($sorted[($depth - 1)]){
@@ -104,11 +103,12 @@ sub find_descendants{
     return @base;
   }
   say ${$parent}{id};
-  #say ${$parent}{child2id};
-  my @children = merge_multis((find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child1id}), \@base)), (find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child2id}), \@base)));
+  my @child1 = (find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child1id}), \@base));
+  my @child2 = (find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child2id}), \@base));
+  my @children = merge_multis(\@child1, \@child2);
   push @{$base[(${$parent}{depth} - 1)]}, $parent;
   print join(", ", @base), "\n";
-  return merge_multis(@base, @children);
+  return merge_multis(\@base, \@children);
 }
 
 sub merge_multis{
