@@ -98,8 +98,7 @@ sub find_descendants{
   my $parent = $_[1];
   my @base = @{$_[2]};
   #push apex node, generate apex node children if available, combine arrays
-  if (!($parent)){ #<<-- Why is this not running?
-    say "returned base";
+  if (!($parent)){
     return @base;
   }
   say ${$parent}{id};
@@ -108,11 +107,11 @@ sub find_descendants{
   my @children = merge_multis(\@child1, \@child2);
   push @{$base[(${$parent}{depth} - 1)]}, $parent;
   print join(", ", @base), "\n";
+  print_multi(\@base);
   return merge_multis(\@base, \@children);
 }
 
 sub merge_multis{
-  say "called merge_multis";
   my @multi1 = @{$_[0]};
   my @multi2 = @{$_[1]};
   for (my $i=0; $i<scalar @multi1; $i++){
@@ -121,6 +120,17 @@ sub merge_multis{
     }
   }
   return @multi1;
+}
+
+sub print_multi{
+  my @multi = @{$_[0]};
+  say "[";
+  for my $ref (@multi){
+    say "  [";
+    print "    ", join(", ", @{$ref}), ",\n";
+    say "  ],";
+  }
+  say "]";
 }
 
 my @dummy = data_generator(4, 1, 0);
