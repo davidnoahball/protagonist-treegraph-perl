@@ -57,13 +57,17 @@ sub row_sorter{
   my $apex = $_[1];
   my @raw_data = @{$_[2]};
   #the first step is to create an array that is the height of the entire tree, this preserves the vertical position data
-  my @sorted = [];
+  my @sorted = ();
   for my $i (1..(scalar @unsorted)) {
+    say $i;
     push @sorted, [];
   }
-  shift @sorted;
   #the next step is to determine which nodes are descendents of the apex to create a new tree: find a node, push that, find its children's nodes, push those, repeat for child nodes
   my $apex_node = find_by_id(\@raw_data, $apex);
+  say "printed data:";
+  print_data(@raw_data);
+  say "base as pushed:";
+  print_multi(\@sorted);
   my @subtree = find_descendants(\@raw_data, $apex_node, \@sorted);
   #the next step is to pick a child on the bottommost layer of the apex tree
   #the next step is to climb the tree from the bottom node up to the apex and push those nodes into their respective positions in 'the array with the height of the entire tree', henceforth referred to as hometree
@@ -97,28 +101,46 @@ sub find_descendants{
   my @searchspace = @{$_[0]};
   my $parent = $_[1];
   my @base = @{$_[2]};
+  say "base:";
+  print_multi(\@base);
   #push apex node, generate apex node children if available, combine arrays
   if (!($parent)){
+    say "parent = 0; base:";
+    print_multi(\@base);
     return @base;
   }
-  say ${$parent}{id};
   my @child1 = (find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child1id}), \@base));
   my @child2 = (find_descendants(\@searchspace, find_by_id(\@searchspace, ${$parent}{child2id}), \@base));
   my @children = merge_multis(\@child1, \@child2);
   push @{$base[(${$parent}{depth} - 1)]}, $parent;
-  print join(", ", @base), "\n";
-  print_multi(\@base);
+  # say "parent id: ", ${$parent}{id};
+  # say "Base with parent reference pushed:";
+  # print_multi(\@base);
+  # say "Child1:";
+  # print_multi(\@child1);
+  # say "Child2:";
+  # print_multi(\@child2);
+  # say "Children:";
+  # print_multi(\@children);
   return merge_multis(\@base, \@children);
 }
 
-sub merge_multis{
+sub merge_multis{ #There's definitely a problem with this subroutine
   my @multi1 = @{$_[0]};
   my @multi2 = @{$_[1]};
+  say "multi1:";
+  print_multi(\@multi1);
+  say "multi2:";
+  print_multi(\@multi2);
   for (my $i=0; $i<scalar @multi1; $i++){
+    say $i;
     for my $item (@{$multi2[$i]}){
       push @{$multi1[$i]}, $item;
+      say $item;
     }
   }
+  say "multi1 updated:";
+  print_multi(@multi1);
   return @multi1;
 }
 
@@ -133,7 +155,7 @@ sub print_multi{
   say "]";
 }
 
-my @dummy = data_generator(4, 1, 0);
+my @dummy = data_generator(4, 2, 0);
 tree_generator(@dummy);
 print_data(@dummy);
 
